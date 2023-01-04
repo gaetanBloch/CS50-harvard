@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap"
+          rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <title>Trivia!</title>
+    <!-- <script>
+        console.log(document.querySelector('button'));
+        document.querySelector('button').style.backgroundColor = 'pink';
+        document.querySelectorAll('button').forEach((el) => {
+            el.addEventListener('click', (e) => {
+                console.log(e);
+                e.target.style.backgroundColor = 'red';
+                e.preventDefault();
+            });
+        });
+    </script> -->
+</head>
+
+<body>
+    <div class="header">
+        <h1>Trivia!</h1>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Part 1: Multiple Choice </h2>
+            <hr>
+            <h3 id="multipleQuestion"></h3>
+            <button id="b1" role="button">Response 1</button>
+            <button id="b2" role="button">Response 2</button>
+            <button id="b3" role="button">Response 3</button>
+            <button id="b4" role="button">Response 4</button>
+            <div id="result1" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Part 2: Free Response</h2>
+            <hr>
+            <h3>How old is Gaëtan Bloch?</h3>
+            <form>
+                <input name="answer" type="text"
+                       placeholder="Born the 01/20/1989" />
+                <button role="submit">Confirm</button>
+            </form>
+            <div id="result2" class="result"></div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const TRIVIA_URI = "https://opentdb.com/api.php?amount=1&category=11&difficulty=easy&type=multiple";
+
+    (async () => {
+        // Using open trivia API
+        // https://opentdb.com/
+        const responseRaw = await fetch(TRIVIA_URI);
+        const response = (await responseRaw.json()).results[0];
+        //// API Response example:
+        // category: "Entertainment: Film"
+        // correct_answer: "Wilson"
+        // difficulty: "easy"
+        // incorrect_answers: (3) ['Friday', 'Jones', 'Billy']
+        // question: "What name did Tom Hanks give to his volleyball companion
+        // in the film `Cast Away`?"
+        // type: "multiple"
+        document.querySelector("#multipleQuestion").innerHTML = response.question;
+        const answerIndex = Math.floor(Math.random() * 5);
+        const correctButton = document.querySelector("#b" + answerIndex);
+        correctButton.innerHTML = response.correct_answer;
+        correctButton.setAttribute('data-correct', true);
+        [1, 2, 3, 4].forEach((i) => {
+            if (i < answerIndex) {
+                document.querySelector("#b" + i).innerHTML = response.incorrect_answers[answerIndex - i - 1];
+            } else if (i > answerIndex) {
+                document.querySelector("#b" + i).innerHTML = response.incorrect_answers[i - 1 - 1];
+            }
+        });
+    })()
+
+
+    document.querySelectorAll('button + button, h3 + button').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            const result = document.querySelector('#result1');
+            if (e.target.dataset?.correct) {
+                e.target.style.backgroundColor = '#9bc38d';
+                result.innerHTML = 'Correct!';
+            } else {
+                e.target.style.backgroundColor = '#ff7c7c';
+                result.innerHTML = 'Incorrect';
+            }
+            e.preventDefault();
+        });
+    });
+
+    const checkMyBirthday = (value) => {
+        const birthday = new Date(1989, 01, 20); // 01/20/1989
+        const ageDiff = Date.now() - birthday.getTime(); // ms
+        const ageDate = new Date(ageDiff); // ms
+        const myAge = Math.abs(ageDate.getUTCFullYear() - 1970); // epoch
+        return value == myAge;
+    };
+
+    document.querySelector('form').addEventListener('submit', (e) => {
+        const answer = document.querySelector('input');
+        const result = document.querySelector('#result2');
+        if (checkMyBirthday(answer.value)) {
+            answer.style.backgroundColor = '#9bc38d';
+            result.innerHTML = 'Correct!';
+        } else {
+            answer.style.backgroundColor = '#ff7c7c';
+            result.innerHTML = 'Incorrect';
+        }
+        e.preventDefault();
+    });
+</script>
+
+</html>

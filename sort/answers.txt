@@ -1,0 +1,11 @@
+sort1 uses: bubble sort
+
+How do you know?: Inconsistent time depending on the list => O(n^2) Ω(n)
+
+sort2 uses: merge sort
+
+How do you know?: almost constant time for all lists and faster than sort3 (selection sort) => O(n * log(n))
+
+sort3 uses: selection sort
+
+How do you know?: almost constant time for all lists but slower than sort2 (merge sort) => O(n^2)
